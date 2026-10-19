@@ -2,557 +2,630 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>LuckyBet</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LuckyBet - Simulation Platform</title>
   <style>
-    :root{
-      --surface-dark:#0f1724;
-      --surface-elevated:#111827;
-      --border-color:#1f2937;
-      --text-muted:#9ca3af;
-      --primary-green:#10b981;
-      --primary-green-bright:#34d399;
-      --gold-bright:#fbbf24;
-      --crimson:#ef4444;
-      --crimson-light:#f87171;
-      --btn-bg:#111827;
-      --btn-color:#fff;
+    :root {
+      --bg-main: #0b0f19;
+      --surface: #111827;
+      --surface-card: #1f2937;
+      --border: #374151;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary: #10b981;
+      --primary-hover: #059669;
+      --accent: #ef4444;
+      --accent-hover: #dc2626;
+      --gold: #f59e0b;
+      --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
-    body{font-family:Inter,system-ui,Arial; background:#071129;color:#e6EEF6;margin:0;padding:0;line-height:1.3}
-    .container{max-width:1100px;margin:24px auto;padding:12px;}
-    .topbar{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
-    .nav-shortcuts{display:flex;gap:8px;align-items:center}
-    .btn{background:var(--btn-bg);color:var(--btn-color);border:1px solid var(--border-color);padding:8px 12px;border-radius:8px;cursor:pointer}
-    .btn-admin{background:#0b5;}
-    .btn-verification{background:#0b79; color:#fff}
-    .nav-tabs{display:flex;gap:8px;margin:12px 0}
-    .nav-tab{padding:8px 12px;border-radius:8px;border:1px solid var(--border-color);cursor:pointer;background:transparent}
-    .nav-tab.active{background:var(--surface-elevated)}
-    .view{display:none;padding:12px}
-    .view.active{display:block}
-    .card{background:var(--surface-elevated);padding:16px;border-radius:12px;border:1px solid var(--border-color)}
-    .form-input{background:transparent;border:1px solid var(--border-color);padding:8px;border-radius:8px;color:#e6eef6}
-    .form-label{display:block;margin-bottom:6px;font-size:13px}
-    .alert-banner{background:#fef3c7;padding:10px;border-radius:8px;color:#92400e}
-    .stat-card{background:transparent;padding:12px;border-radius:8px;text-align:center}
-    .stat-val{font-weight:800;font-size:20px}
-    #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;background:#111827;color:#fff;padding:10px 14px;border-radius:8px;opacity:0;transition:opacity .25s}
-    .modal-overlay{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:flex;align-items:center;justify-content:center;z-index:60}
-    .modal-card{background:var(--surface-elevated);border:1px solid var(--border-color);border-radius:12px;padding:12px;width:92%;max-width:760px;color:#e6eef6}
-    .modal-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:1px solid var(--border-color);margin-bottom:8px}
-    .modal-title{font-weight:800}
-    .modal-close{background:transparent;border:none;color:#e6eef6;font-size:20px;cursor:pointer}
-    .user-row{width:100%}
-    .user-actions-row{display:flex;gap:8px}
-    .quick-chips{display:flex;gap:8px;flex-wrap:wrap}
-    input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-stack);
+      background-color: var(--bg-main);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* TOP NAVIGATION */
+    .navbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand span { color: var(--primary); }
+
+    .user-summary {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .balance-badge {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* CONTAINER & TABS */
+    .container {
+      max-width: 1100px;
+      width: 100%;
+      margin: 20px auto;
+      padding: 0 16px;
+      flex: 1;
+    }
+
+    .tab-nav {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+      padding-bottom: 4px;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 15px;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover { color: #fff; background: var(--surface); }
+    .tab-btn.active { color: #fff; background: var(--surface-card); border-bottom: 2px solid var(--primary); }
+
+    .view-panel { display: none; }
+    .view-panel.active { display: block; }
+
+    /* CARDS & LAYOUT */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: var(--primary-hover); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-danger { background: var(--accent); }
+    .btn-danger:hover { background: var(--accent-hover); }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--text-muted); }
+    .form-input {
+      width: 100%;
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+    .form-input:focus { border-color: var(--primary); }
+
+    /* AVIATOR SIMULATION VIEW */
+    .canvas-container {
+      position: relative;
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    canvas { display: block; width: 100%; height: 320px; }
+
+    .multiplier-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      pointer-events: none;
+    }
+
+    .history-bar {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+    }
+
+    .history-badge {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: var(--surface-card);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .history-badge.high { color: var(--primary); border-color: rgba(16,185,129,0.3); }
+
+    .bet-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      background: var(--surface-card);
+      padding: 16px;
+      border-radius: 8px;
+    }
+
+    /* SPORTSBOOK VIEW */
+    .fixtures-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .fixture-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .fixture-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .odds-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .odds-btn {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 8px 0;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.15s;
+    }
+    .odds-btn:hover { background: #263345; }
+
+    /* TOAST ALERTS */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 8px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+      z-index: 50;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="topbar">
-      <div style="display:flex;flex-direction:column;">
-        <h1 style="margin:0">LuckyBet</h1>
-        <div style="font-size:13px;color:var(--text-muted)">Play responsibly</div>
-      </div>
 
-      <div class="nav-shortcuts">
-        <!-- Admin / Verification Shortcut -->
-        <button class="btn btn-admin" onclick="openVerificationModal()" title="Verification Panel">
-          VERIFICATION CODE
-        </button>
-      </div>
+  <!-- NAVIGATION -->
+  <header class="navbar">
+    <div class="brand">
+      LuckyBet <span>Demo</span>
     </div>
-
-    <!-- NAV TABS -->
-    <div class="nav-tabs">
-      <div class="nav-tab active" id="tabAviator" onclick="switchTab('aviator')">✈️ Aviator Crash</div>
-      <div class="nav-tab" id="tabSports" onclick="switchTab('sports')">⚽ Sportsbook</div>
-      <div class="nav-tab" id="tabWallet" onclick="switchTab('wallet')">💼 Wallet & History</div>
-      <div class="nav-tab" id="tabAdmin" onclick="openVerificationModal()">VERIFICATION CODE</div>
+    <div class="user-summary">
+      <div class="balance-badge" id="navBalanceDisplay">KES 1,000.00</div>
     </div>
+  </header>
 
-    <!-- MAIN VIEWS -->
-    <div id="viewAviator" class="view active">
+  <!-- MAIN CONTAINER -->
+  <main class="container">
+    <nav class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('aviator')">✈️ Flight Simulator</button>
+      <button class="tab-btn" onclick="switchTab('sports')">⚽ Sportsbook Demo</button>
+      <button class="tab-btn" onclick="switchTab('wallet')">💼 Simulated Wallet</button>
+    </nav>
+
+    <!-- TAB 1: FLIGHT SIMULATOR -->
+    <section id="view-aviator" class="view-panel active">
       <div class="card">
-        <h2 style="margin:0 0 8px 0">Aviator</h2>
-        <div style="display:flex;align-items:center;gap:12px;">
-          <div style="font-size:28px;font-weight:800" id="multText">1.00x</div>
-          <div style="color:var(--text-muted)">Phase: <span id="phaseText">WAITING</span></div>
-          <div style="margin-left:auto">
-            <button class="btn" onclick="startRound()">Start (dev)</button>
-          </div>
-        </div>
-        <div style="margin-top:12px;color:var(--text-muted)">Round history: <span id="roundHistory">—</span></div>
-      </div>
-    </div>
-
-    <div id="viewSports" class="view">
-      <div class="card">
-        <h2 style="margin-bottom:8px;">Live Kenyan Sportsbook</h2>
-        <p style="color:var(--text-muted);margin-bottom:18px;">Premier League, Gor Mahia, AFC Leopards, UEFA Champions League, Premier League SUNDAY 17th October Everton vs Chelsea, Brentford vs Liverpool, Fulham vs Hull City, Manchester City vs Ipswich Town</p>
-
-        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-          <div style="background:var(--surface-dark);padding:14px 20px;border-radius:10px;border:1px solid var(--border-color);min-width:200px;">
-            <div style="font-size:12px;color:var(--primary-green-bright);font-weight:700;">LIVE 64'</div>
-            <div style="font-weight:800;margin:6px 0;">Everton vs Chelsea</div>
-            <div style="display:flex;gap:6px;justify-content:center;">
-              <button class="btn" onclick="showToast('Bet placed on 1 (Everton @ 1.85)')">1: 1.85</button>
-              <button class="btn" onclick="showToast('Bet placed on X (Draw @ 3.40)')">X: 3.40</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="viewWallet" class="view">
-      <div class="card">
-        <h3 style="font-size:16px;margin-bottom:12px;">Wallet & History</h3>
-
-        <!-- CREATE ACCOUNT -->
-        <div style="display:flex;gap:12px;flex-wrap:wrap;">
-          <div style="flex:1;min-width:260px">
-            <label class="form-label">Phone Number</label>
-            <input class="form-input" id="regPhone" placeholder="07XXXXXXXX" />
-            <div style="height:8px"></div>
-            <button class="btn" onclick="createAccount()">CREATE ACCOUNT</button>
-            <div style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:8px;">
-              🔒 Verification code will be generated by LuckyBet Officials on your registration.
-            </div>
-          </div>
-
-          <!-- VERIFY CODE FORM -->
-          <div id="formVerify" style="display:none;flex:1;min-width:260px">
-            <div class="alert-banner alert-warning">
-              <span>LuckyBet Officials-Controlled Verification: Please enter the 6-digit verification code provided by LuckyBet Officials.</span>
-            </div>
-            <div class="form-group" style="margin-top:10px;">
-              <label class="form-label">6-Digit Verification Code</label>
-              <input class="form-input" id="userVerifyCode" placeholder="123456" />
-            </div>
-            <button class="btn" onclick="submitUserVerification()">SUBMIT VERIFICATION CODE</button>
-            <div style="text-align:center;margin-top:10px;">
-              <button class="btn btn-sm btn-wallet" onclick="openVerificationModal()">Open Verification Portal to view/generate code</button>
-            </div>
-          </div>
+        <div class="history-bar" id="historyBar">
+          <!-- Populated by JS -->
         </div>
 
-        <hr style="border:none;border-top:1px solid var(--border-color);margin:12px 0"/>
-
-        <div style="display:flex;gap:12px;flex-wrap:wrap;">
-          <div style="flex:1;min-width:220px;">
-            <div class="form-group">
-              <label class="form-label">Amount to Deposit (KES)</label>
-              <input type="number" class="form-input" id="depositAmount" value="300" min="10" step="10"/>
-            </div>
-            <div style="margin-top:8px;">
-              <button class="btn" onclick="openDepositModal()">DEPOSIT</button>
-            </div>
-          </div>
-
-          <div style="flex:1;min-width:220px;">
-            <div class="form-group" style="margin-top:0">
-              <label class="form-label">Withdrawal Amount (Min KES 100)</label>
-              <input type="number" class="form-input" id="withdrawAmount" value="100" min="100" step="100"/>
-            </div>
-            <div style="margin-top:8px;">
-              <button class="btn" onclick="openWithdrawModal()">WITHDRAW</button>
-            </div>
-          </div>
+        <div class="canvas-container">
+          <canvas id="gameCanvas"></canvas>
+          <div class="multiplier-overlay" id="multiplierOverlay">1.00x</div>
         </div>
 
-      </div>
-    </div>
-
-    <!-- ================================================================= -->
-    <!-- MODAL: VERIFICATION PANEL -->
-    <!-- ================================================================= -->
-    <div class="modal-overlay" id="verificationModal" style="display:none;">
-      <div class="modal-card">
-        <div class="modal-header">
-          <div class="modal-title">Verification Panel</div>
-          <button class="modal-close" onclick="closeModal('verificationModal')">&times;</button>
-        </div>
-
-        <div class="modal-body">
-          <!-- VERIFICATION LOGIN / PIN -->
-          <div id="verificationForm">
-            <div class="form-group">
-              <label class="form-label">Enter Verification PIN</label>
-              <input type="password" class="form-input" id="verificationPinInput" value="" placeholder=""/>
-            </div>
-            <button class="btn btn-verification" style="width:100%;margin-top:12px;padding:12px;justify-content:center;" onclick="submitVerificationLogin()">
-              UNLOCK VERIFICATION DASHBOARD
+        <div class="bet-controls">
+          <div>
+            <label class="form-label">Stake Amount (KES)</label>
+            <input type="number" id="stakeAmount" class="form-input" value="50" min="10" step="10" />
+          </div>
+          <div style="display:flex; align-items:flex-end;">
+            <button id="primaryGameBtn" class="btn" style="width: 100%; height: 42px;" onclick="handleGameAction()">
+              PLACE STAKE
             </button>
           </div>
+        </div>
+      </div>
+    </section>
 
-          <!-- VERIFICATION DASHBOARD CONTENT -->
-          <div id="verificationDashboardContent" style="display:none;">
-            <!-- KPI STATS -->
-            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
-              <div class="stat-card">
-                <div class="stat-val" id="verificationTotalUsers">0</div>
-                <div class="stat-label">Total Users</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-val" id="verificationPendingUsers" style="color:var(--gold-bright);">0</div>
-                <div class="stat-label">Pending Codes</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-val" id="verificationFrozenUsers" style="color:#60A5FA;">0</div>
-                <div class="stat-label">Frozen</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-val" id="verificationBannedUsers" style="color:var(--crimson-light);">0</div>
-                <div class="stat-label">Banned</div>
-              </div>
+    <!-- TAB 2: SPORTSBOOK DEMO -->
+    <section id="view-sports" class="view-panel">
+      <div class="card">
+        <h3 style="margin-bottom: 16px;">Featured Events (Simulated Odds)</h3>
+        <div class="fixtures-grid">
+          
+          <div class="fixture-card">
+            <div class="fixture-header"><span>Premier League</span><span>Live 72'</span></div>
+            <div style="font-weight: 700; margin-bottom: 10px;">Arsenal vs Chelsea</div>
+            <div class="odds-row">
+              <button class="odds-btn" onclick="placeSportsBet('Arsenal', 2.10)">1 (2.10)</button>
+              <button class="odds-btn" onclick="placeSportsBet('Draw', 3.25)">X (3.25)</button>
+              <button class="odds-btn" onclick="placeSportsBet('Chelsea', 3.40)">2 (3.40)</button>
             </div>
+          </div>
 
-            <!-- AVIATOR RIGGING / HOUSE CONTROL (kept so JS that references it won't break) -->
-            <div style="background:var(--surface-dark);padding:14px;border-radius:12px;border:1px solid var(--border-color);margin-bottom:14px;">
-              <div style="font-weight:800;font-size:13px;margin-bottom:8px;color:var(--gold-bright);">✈️ Aviator House Multiplier Controls</div>
-              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-                <input type="number" id="adminNextCrashInput" class="form-input" placeholder="Next Crash (e.g. 15.5)" step="0.1" style="width:180px;padding:8px;"/>
-                <button class="btn" onclick="adminSetNextCrash()">Set Next Crash</button>
-                <button class="btn" onclick="adminSetHouseMode('FAIR')">Fair RNG</button>
-                <button class="btn" onclick="adminSetHouseMode('GREEDY')">Greedy (Crash Low)</button>
-                <button class="btn" onclick="adminSetHouseMode('GENEROUS')">Generous (Fly High)</button>
-              </div>
+          <div class="fixture-card">
+            <div class="fixture-header"><span>La Liga</span><span>Today 21:00</span></div>
+            <div style="font-weight: 700; margin-bottom: 10px;">Real Madrid vs Sevilla</div>
+            <div class="odds-row">
+              <button class="odds-btn" onclick="placeSportsBet('Real Madrid', 1.55)">1 (1.55)</button>
+              <button class="odds-btn" onclick="placeSportsBet('Draw', 4.10)">X (4.10)</button>
+              <button class="odds-btn" onclick="placeSportsBet('Sevilla', 6.00)">2 (6.00)</button>
             </div>
+          </div>
 
-            <!-- USER SEARCH & FILTER -->
-            <div style="display:flex;gap:8px;margin-bottom:12px;">
-              <input type="text" class="form-input" id="verificationUserSearch" placeholder="Search by phone or name..." oninput="renderVerificationUsers()" style="flex:1;padding:8px 12px;"/>
-              <select class="form-input" id="verificationUserFilter" onchange="renderVerificationUsers()" style="width:140px;padding:8px;">
-                <option value="ALL">All Users</option>
-                <option value="PENDING">Pending Verify</option>
-                <option value="ACTIVE">Active</option>
-                <option value="FROZEN">Frozen</option>
-                <option value="BANNED">Banned</option>
-              </select>
+          <div class="fixture-card">
+            <div class="fixture-header"><span>Serie A</span><span>Today 19:45</span></div>
+            <div style="font-weight: 700; margin-bottom: 10px;">Inter Milan vs Juventus</div>
+            <div class="odds-row">
+              <button class="odds-btn" onclick="placeSportsBet('Inter Milan', 2.05)">1 (2.05)</button>
+              <button class="odds-btn" onclick="placeSportsBet('Draw', 3.10)">X (3.10)</button>
+              <button class="odds-btn" onclick="placeSportsBet('Juventus', 3.75)">2 (3.75)</button>
             </div>
+          </div>
 
-            <!-- USERS LIST -->
-            <div id="verificationUserList" style="max-height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;">
-              <!-- Dynamically populated -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: SIMULATED WALLET -->
+    <section id="view-wallet" class="view-panel">
+      <div class="card">
+        <h3 style="margin-bottom: 12px;">Local Demo Wallet</h3>
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">
+          This wallet operates strictly with test credits stored locally in memory. No real financial transactions are executed.
+        </p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <!-- SIMULATED DEPOSIT -->
+          <div style="background: var(--surface-card); padding: 16px; border-radius: 8px;">
+            <h4 style="margin-bottom: 8px;">Simulate Credit Addition</h4>
+            <div class="form-group">
+              <label class="form-label">Amount (KES)</label>
+              <input type="number" id="demoDepositAmt" class="form-input" value="200" min="50" step="50" />
             </div>
+            <button class="btn" onclick="simulateDeposit()">Add Demo Credits</button>
+          </div>
+
+          <!-- SIMULATED WITHDRAWAL -->
+          <div style="background: var(--surface-card); padding: 16px; border-radius: 8px;">
+            <h4 style="margin-bottom: 8px;">Simulate Credit Deduction</h4>
+            <div class="form-group">
+              <label class="form-label">Amount (KES, Min 100)</label>
+              <input type="number" id="demoWithdrawAmt" class="form-input" value="100" min="100" step="50" />
+            </div>
+            <button class="btn btn-danger" onclick="simulateWithdrawal()">Deduct Demo Credits</button>
           </div>
         </div>
       </div>
-    </div>
+    </section>
+  </main>
 
-    <div id="toast">...</div>
-  </div>
+  <div id="toast">Alert</div>
 
   <script>
-    // App State
-    let currentUser = null;
-    let registeredUsers = [];
-    let transactions = [];
-    let roundHistory = [1.84, 2.15, 1.12, 4.56, 1.05, 14.80, 2.91, 1.45, 3.20, 1.98];
-
-    let aviatorPhase = 'WAITING'; // 'WAITING', 'FLYING', 'CRASHED'
+    // --- STATE MANAGEMENT ---
+    let demoBalance = 1000.00;
+    let roundHistory = [1.25, 3.42, 1.10, 8.50, 1.95, 2.15];
+    
+    // Game Engine State
+    let gameState = 'IDLE'; // 'IDLE', 'RUNNING', 'CRASHED'
+    let currentStake = 0;
     let currentMultiplier = 1.00;
-    let crashMultiplier = 2.45;
-    let countdown = 10.0;
-    let engineTimer = null;
-    let nextRiggedCrash = null;
-    let houseMode = 'GENEROUS';
+    let crashThreshold = 0;
+    let startTime = null;
+    let animFrame = null;
 
-    const MIN_WITHDRAWAL = 100;
+    // Canvas References
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const overlay = document.getElementById('multiplierOverlay');
+    const gameBtn = document.getElementById('primaryGameBtn');
 
-    // Basic UI helpers
-    function closeModal(id){ const el = document.getElementById(id); if(el) el.style.display='none'; }
-    function switchTab(tab){
-      document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-      document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-      document.getElementById('tabAviator').classList.remove('active');
-      if(tab==='aviator'){ document.getElementById('tabAviator').classList.add('active'); document.getElementById('viewAviator').classList.add('active'); }
-      if(tab==='sports'){ document.getElementById('tabSports').classList.add('active'); document.getElementById('viewSports').classList.add('active'); }
-      if(tab==='wallet'){ document.getElementById('tabWallet').classList.add('active'); document.getElementById('viewWallet').classList.add('active'); }
-    }
-
-    function showAuthError(msg){
-      alert(msg);
-    }
-
-    function openDepositModal(){ showToast("Open deposit (placeholder)"); }
-    function openWithdrawModal(){
-      const min = MIN_WITHDRAWAL;
-      const amt = parseFloat(document.getElementById('withdrawAmount').value) || 0;
-      if (amt < min) {
-        alert(`Please deposit KES ${min} to withdraw. Minimum withdrawal is KES ${min}.`);
-      } else {
-        submitWithdrawal();
-      }
-    }
-
-    function startRound(){
-      showToast('Starting demo round...');
-      // simple demo change
-      runWaitingPhase();
-      setTimeout(()=>{ aviatorPhase='FLYING'; document.getElementById('phaseText').innerText='FLYING'; currentMultiplier=1.4; document.getElementById('multText').innerText=currentMultiplier.toFixed(2)+'x'; }, 1200);
-      setTimeout(()=>{ aviatorPhase='CRASHED'; document.getElementById('phaseText').innerText='CRASHED'; currentMultiplier=1.00; document.getElementById('multText').innerText='1.00x'; }, 5200);
-    }
-
-    // Initialization and state load
-    document.addEventListener('DOMContentLoaded', () => {
-      // Check if URL hash has admin_login
-      if (window.location.hash === '#admin_login') {
-        openVerificationModal();
-      }
-
-      if (!localStorage.getItem('lucky_state')) {
-        registeredUsers = [
-          { phoneNumber: "0712345678", fullName: "Kamau Njoroge", password: "pass", balance: 500.0, verificationCode: "748291", isVerified: true, isFrozen: false, isBanned: false },
-          { phoneNumber: "0722000111", fullName: "Achieng Odhiambo", password: "pass", balance: 1450.0, verificationCode: "591024", isVerified: true, isFrozen: false, isBanned: false },
-          { phoneNumber: "0799887766", fullName: "Brian Kiprop", password: "pass", balance: 500.0, verificationCode: "381920", isVerified: false, isFrozen: false, isBanned: false }
-        ];
-        saveLocalState();
-      } else {
-        const state = JSON.parse(localStorage.getItem('lucky_state'));
-        registeredUsers = state.registeredUsers || [];
-        transactions = state.transactions || [];
-      }
-
-      renderVerificationUsers();
-      updateUI();
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      resizeCanvas();
+      renderHistory();
+      updateBalanceUI();
+      drawIdleCurve();
     });
 
-    function runWaitingPhase() {
-      aviatorPhase = 'WAITING';
-      countdown = 10.0;
-      currentMultiplier = 1.00;
-      document.getElementById('multText').innerText = '1.00x';
-      document.getElementById('phaseText').innerText = 'WAITING';
+    window.addEventListener('resize', resizeCanvas);
+
+    function resizeCanvas() {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = 320;
+      if (gameState === 'IDLE') drawIdleCurve();
     }
 
-    // Authentication / account flows
-    function createAccount(){
-      const phone = document.getElementById('regPhone').value.trim();
-      if(!phone){ alert('Enter phone'); return; }
-      if(registeredUsers.find(u=>u.phoneNumber===phone)){ alert('Account exists'); return; }
-      const vCode = String(Math.floor(100000 + Math.random()*900000));
-      const u = { phoneNumber: phone, fullName: 'New User', password:'pass', balance:500.0, verificationCode:vCode, isVerified:false, isFrozen:false, isBanned:false, registeredAt:Date.now() };
-      registeredUsers.unshift(u);
-      saveLocalState();
-      showToast(`Account created. Verification code: ${vCode}`);
-      renderVerificationUsers();
-    }
+    // --- TAB NAVIGATION ---
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
 
-    function submitUserVerification(){
-      const code = (document.getElementById('userVerifyCode').value||'').trim();
-      if(!code){ showAuthError('Enter code'); return; }
-      // find matching user of current reg input
-      const phone = document.getElementById('regPhone').value.trim();
-      const user = registeredUsers.find(u => u.phoneNumber === phone || u.verificationCode === code);
-      if(!user){ showAuthError('Invalid verification code. Check on Verification Portal.'); return; }
-      if(user.verificationCode === code){
-        user.isVerified = true;
-        saveLocalState();
-        showToast('Account verified successfully!');
-        renderVerificationUsers();
-      } else {
-        showAuthError('Invalid verification code. Check on Verification Portal.');
+      if (tabId === 'aviator') {
+        document.querySelector("button[onclick=\"switchTab('aviator')\"]").classList.add('active');
+        document.getElementById('view-aviator').classList.add('active');
+        resizeCanvas();
+      } else if (tabId === 'sports') {
+        document.querySelector("button[onclick=\"switchTab('sports')\"]").classList.add('active');
+        document.getElementById('view-sports').classList.add('active');
+      } else if (tabId === 'wallet') {
+        document.querySelector("button[onclick=\"switchTab('wallet')\"]").classList.add('active');
+        document.getElementById('view-wallet').classList.add('active');
       }
     }
 
-    function submitWithdrawal(){
-      const amt = parseFloat(document.getElementById('withdrawAmount').value);
-      if (isNaN(amt) || amt < MIN_WITHDRAWAL) {
-        alert(`Minimum withdrawal is KES ${MIN_WITHDRAWAL}.00.`);
-        return;
+    // --- FLIGHT SIMULATION ENGINE ---
+    function handleGameAction() {
+      if (gameState === 'IDLE') {
+        // Place Stake and Start
+        const stakeInput = parseFloat(document.getElementById('stakeAmount').value);
+        if (isNaN(stakeInput) || stakeInput <= 0) {
+          showToast('Please enter a valid stake amount.');
+          return;
+        }
+        if (stakeInput > demoBalance) {
+          showToast('Insufficient demo credits.');
+          return;
+        }
+
+        // Deduct Stake
+        demoBalance -= stakeInput;
+        currentStake = stakeInput;
+        updateBalanceUI();
+
+        // Configure Game Parameters
+        gameState = 'RUNNING';
+        currentMultiplier = 1.00;
+        // Basic demonstration probability distribution
+        crashThreshold = +(1.05 + Math.random() * 4.0).toFixed(2);
+        startTime = performance.now();
+
+        // Update UI
+        gameBtn.innerText = `CASHOUT (KES ${(currentStake * currentMultiplier).toFixed(2)})`;
+        gameBtn.classList.add('btn-danger');
+        overlay.style.color = '#fff';
+
+        animFrame = requestAnimationFrame(gameLoop);
+      } else if (gameState === 'RUNNING') {
+        // Cashout Action
+        const payout = currentStake * currentMultiplier;
+        demoBalance += payout;
+        updateBalanceUI();
+        showToast(`Successfully cashed out at ${currentMultiplier.toFixed(2)}x (+KES ${payout.toFixed(2)})`);
+
+        // Switch to passive watching
+        currentStake = 0;
+        gameBtn.disabled = true;
+        gameBtn.innerText = 'CASHED OUT';
       }
-      showToast(`Withdrawal of KES ${amt} submitted (demo).`);
     }
 
-    // -------------------------------------------------------------
-    // VERIFICATION PORTAL / ADMIN-LIKE FUNCTIONS
-    // -------------------------------------------------------------
-    let isAdminUnlocked = false;
+    function gameLoop(timestamp) {
+      const elapsed = (timestamp - startTime) / 1000;
+      // Exponential growth curve: M = e^(0.08 * t)
+      currentMultiplier = +(Math.exp(0.08 * elapsed)).toFixed(2);
 
-    function openVerificationModal() {
-      document.getElementById('verificationModal').style.display = 'flex';
-      if (isAdminUnlocked) {
-        document.getElementById('verificationForm').style.display = 'none';
-        document.getElementById('verificationDashboardContent').style.display = 'block';
-        renderVerificationUsers();
-      } else {
-        document.getElementById('verificationForm').style.display = 'block';
-        document.getElementById('verificationDashboardContent').style.display = 'none';
-      }
-    }
-
-    function submitVerificationLogin() {
-      const pin = document.getElementById('verificationPinInput').value;
-      if (pin === "290290" || pin === "admin123") {
-        isAdminUnlocked = true;
-        document.getElementById('verificationForm').style.display = 'none';
-        document.getElementById('verificationDashboardContent').style.display = 'block';
-        renderVerificationUsers();
-      } else {
-        alert("Invalid USER PIN. (Hint: 290290)");
-      }
-    }
-
-    function renderVerificationUsers() {
-      const search = (document.getElementById('verificationUserSearch')?.value || '').toLowerCase();
-      const filter = (document.getElementById('verificationUserFilter')?.value || 'ALL');
-
-      let filtered = registeredUsers.filter(u => {
-        const matchesSearch = !search || (u.phoneNumber && u.phoneNumber.includes(search)) || (u.fullName && u.fullName.toLowerCase().includes(search));
-        let matchesFilter = true;
-        if (filter === 'PENDING') matchesFilter = !u.isVerified;
-        if (filter === 'ACTIVE') matchesFilter = u.isVerified && !u.isFrozen && !u.isBanned;
-        if (filter === 'FROZEN') matchesFilter = u.isFrozen;
-        if (filter === 'BANNED') matchesFilter = u.isBanned;
-        return matchesSearch && matchesFilter;
-      });
-
-      // Update KPIs
-      const totalEl = document.getElementById('verificationTotalUsers');
-      const pendingEl = document.getElementById('verificationPendingUsers');
-      const frozenEl = document.getElementById('verificationFrozenUsers');
-      const bannedEl = document.getElementById('verificationBannedUsers');
-      if(totalEl) totalEl.innerText = registeredUsers.length;
-      if(pendingEl) pendingEl.innerText = registeredUsers.filter(u => !u.isVerified).length;
-      if(frozenEl) frozenEl.innerText = registeredUsers.filter(u => u.isFrozen).length;
-      if(bannedEl) bannedEl.innerText = registeredUsers.filter(u => u.isBanned).length;
-
-      const cont = document.getElementById('verificationUserList');
-      if (!cont) return;
-      if (filtered.length === 0) {
-        cont.innerHTML = `<div style="text-align:center;color:var(--text-muted);padding:20px;">No matching users.</div>`;
+      if (currentMultiplier >= crashThreshold) {
+        // Flight ended
+        handleCrash();
         return;
       }
 
-      cont.innerHTML = filtered.map(u => {
-        return `
-        <div class="user-row card" style="display:flex;justify-content:space-between;align-items:center;">
-          <div>
-            <div style="font-weight:700">${u.fullName || 'Unknown'}</div>
-            <div style="font-size:12px;color:var(--text-muted)">${u.phoneNumber}</div>
-            <div style="font-size:12px;color:var(--text-muted)">Code: ${u.verificationCode || '—'}</div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
-            ${!u.isVerified ? `<button class="btn" onclick="adminDirectVerify('${u.phoneNumber}')">✅ Verify Directly</button>` : ''}
-            <button class="btn" onclick="adminToggleFreeze('${u.phoneNumber}')">
-              ${u.isFrozen ? '❄️ Unfreeze' : '❄️ Freeze Account'}
-            </button>
-            <button class="btn" style="background:${u.isBanned ? 'var(--primary-green)' : 'var(--crimson)'};color:#fff;" onclick="adminToggleBan('${u.phoneNumber}')">
-              ${u.isBanned ? 'Unban Account' : '🚫 Ban Account'}
-            </button>
-            <button class="btn" onclick="adminFundPrompt('${u.phoneNumber}')">+ Fund KES</button>
-          </div>
-        </div>
-        `;
+      // Update Overlay and Active Cashout Value
+      overlay.innerText = `${currentMultiplier.toFixed(2)}x`;
+      if (currentStake > 0) {
+        gameBtn.innerText = `CASHOUT (KES ${(currentStake * currentMultiplier).toFixed(2)})`;
+      }
+
+      // Draw Graphics
+      renderTrajectory(elapsed);
+      animFrame = requestAnimationFrame(gameLoop);
+    }
+
+    function handleCrash() {
+      gameState = 'CRASHED';
+      overlay.innerText = `CRASHED @ ${crashThreshold.toFixed(2)}x`;
+      overlay.style.color = '#ef4444';
+
+      roundHistory.unshift(crashThreshold);
+      if (roundHistory.length > 8) roundHistory.pop();
+      renderHistory();
+
+      if (currentStake > 0) {
+        showToast(`Round ended before cashout.`);
+        currentStake = 0;
+      }
+
+      // Reset controls after a brief delay
+      setTimeout(() => {
+        gameState = 'IDLE';
+        overlay.innerText = '1.00x';
+        overlay.style.color = '#fff';
+        gameBtn.disabled = false;
+        gameBtn.innerText = 'PLACE STAKE';
+        gameBtn.classList.remove('btn-danger');
+        drawIdleCurve();
+      }, 2500);
+    }
+
+    function renderTrajectory(elapsed) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const originX = 40;
+      const originY = canvas.height - 40;
+      const progressX = Math.min(canvas.width - 80, elapsed * 50);
+      const progressY = Math.min(canvas.height - 80, Math.pow(elapsed, 1.6) * 20);
+
+      const targetX = originX + progressX;
+      const targetY = originY - progressY;
+
+      // Draw Curve
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(originX, originY);
+      ctx.quadraticCurveTo(originX + progressX * 0.4, originY, targetX, targetY);
+      ctx.stroke();
+
+      // Draw Point Indicator
+      ctx.fillStyle = '#ef4444';
+      ctx.beginPath();
+      ctx.arc(targetX, targetY, 6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawIdleCurve() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = '#1f2937';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(40, canvas.height - 40);
+      ctx.lineTo(canvas.width - 40, canvas.height - 40);
+      ctx.stroke();
+    }
+
+    function renderHistory() {
+      const container = document.getElementById('historyBar');
+      container.innerHTML = roundHistory.map(val => {
+        const isHigh = val >= 2.0;
+        return `<div class="history-badge ${isHigh ? 'high' : ''}">${val.toFixed(2)}x</div>`;
       }).join('');
     }
 
-    function adminGenerateNewCode(phone) {
-      const u = registeredUsers.find(x => x.phoneNumber === phone);
-      if (u) {
-        u.verificationCode = String(Math.floor(100000 + Math.random() * 900000));
-        saveLocalState();
-        renderVerificationUsers();
-        showToast(`New code ${u.verificationCode} generated for ${phone}`);
+    // --- SPORTSBOOK SIMULATION ---
+    function placeSportsBet(selection, odds) {
+      const stake = 100;
+      if (demoBalance < stake) {
+        showToast('Insufficient demo credits.');
+        return;
       }
+      demoBalance -= stake;
+      updateBalanceUI();
+      showToast(`Demo bet placed: ${selection} @ ${odds.toFixed(2)} (Stake: KES ${stake})`);
     }
 
-    function adminDirectVerify(phone) {
-      const u = registeredUsers.find(x => x.phoneNumber === phone);
-      if (u) {
-        u.isVerified = true;
-        saveLocalState();
-        renderVerificationUsers();
-        showToast(`User ${phone} verified directly!`);
+    // --- WALLET UTILITIES ---
+    function simulateDeposit() {
+      const amt = parseFloat(document.getElementById('demoDepositAmt').value);
+      if (isNaN(amt) || amt <= 0) {
+        showToast('Enter a valid deposit amount.');
+        return;
       }
+      demoBalance += amt;
+      updateBalanceUI();
+      showToast(`Added KES ${amt.toFixed(2)} in demo credits.`);
     }
 
-    function adminToggleFreeze(phone) {
-      const u = registeredUsers.find(x => x.phoneNumber === phone);
-      if (u) {
-        u.isFrozen = !u.isFrozen;
-        saveLocalState();
-        renderVerificationUsers();
-        showToast(`User ${phone} is now ${u.isFrozen ? 'FROZEN' : 'ACTIVE'}.`);
+    function simulateWithdrawal() {
+      const amt = parseFloat(document.getElementById('demoWithdrawAmt').value);
+      if (isNaN(amt) || amt < 100) {
+        showToast('Minimum simulated withdrawal is KES 100.00.');
+        return;
       }
-    }
-
-    function adminToggleBan(phone) {
-      const u = registeredUsers.find(x => x.phoneNumber === phone);
-      if (u) {
-        u.isBanned = !u.isBanned;
-        saveLocalState();
-        renderVerificationUsers();
-        showToast(`User ${phone} is now ${u.isBanned ? 'BANNED' : 'UNBANNED'}.`);
+      if (amt > demoBalance) {
+        showToast('Insufficient demo balance.');
+        return;
       }
+      demoBalance -= amt;
+      updateBalanceUI();
+      showToast(`Successfully deducted KES ${amt.toFixed(2)} from demo balance.`);
     }
 
-    function adminFundPrompt(phone) {
-      const val = prompt(`Enter amount to credit to ${phone}:`, "100");
-      const amt = parseFloat(val);
-      if (!isNaN(amt) && amt > 0) {
-        const u = registeredUsers.find(x => x.phoneNumber === phone);
-        if (u) {
-          u.balance = (u.balance || 0) + amt;
-          transactions.unshift({
-            id: "TX" + Date.now().toString().slice(-6),
-            phoneNumber: phone,
-            mpesaCode: "DEPOSIT_FUND",
-            type: "DEPOSIT_FUND",
-            amount: amt,
-            status: "COMPLETED",
-            timestamp: Date.now()
-          });
-          saveLocalState();
-          renderVerificationUsers();
-          updateUI();
-          showToast(`Credited KES ${amt} to ${phone}`);
-        }
-      }
-    }
-
-    function adminSetNextCrash() {
-      const val = parseFloat(document.getElementById('adminNextCrashInput').value);
-      if (!isNaN(val) && val >= 1.01) {
-        nextRiggedCrash = val;
-        showToast(`Next round will crash exactly at ${val.toFixed(2)}x!`);
-      }
-    }
-
-    function adminSetHouseMode(mode) {
-      houseMode = mode;
-      showToast(`House mode set to ${mode}`);
-    }
-
-    // Utility: persist and helpers
-    function saveLocalState() {
-      localStorage.setItem('lucky_state', JSON.stringify({ registeredUsers, transactions }));
+    function updateBalanceUI() {
+      document.getElementById('navBalanceDisplay').innerText = `KES ${demoBalance.toFixed(2)}`;
     }
 
     function showToast(msg) {
-      const t = document.getElementById('toast');
-      if (t) {
-        t.innerText = msg;
-        t.style.opacity = 1;
-        clearTimeout(t._hideTimer);
-        t._hideTimer = setTimeout(()=> t.style.opacity = 0, 3500);
-      } else {
-        console.log('[TOAST]', msg);
-      }
+      const el = document.getElementById('toast');
+      el.innerText = msg;
+      el.style.opacity = '1';
+      clearTimeout(el._timer);
+      el._timer = setTimeout(() => { el.style.opacity = '0'; }, 3000);
     }
-
-    function updateUI() {
-      // update parts of UI that depend on state
-      document.getElementById('roundHistory').innerText = roundHistory.join(', ');
-      renderVerificationUsers();
-    }
-
-    // Expose a small API to console for manual testing
-    window._lb = {
-      registeredUsers, transactions, showToast, renderVerificationUsers, saveLocalState
-    };
   </script>
 </body>
 </html>
