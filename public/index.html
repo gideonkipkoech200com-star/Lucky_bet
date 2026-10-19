@@ -59,18 +59,19 @@
     .user-summary {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
     }
 
     .balance-badge {
       background: var(--surface-card);
       border: 1px solid var(--border);
-      padding: 6px 14px;
+      padding: 6px 12px;
       border-radius: 9999px;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--primary);
     }
+    .balance-badge span { color: var(--gold); }
 
     /* CONTAINER & TABS */
     .container {
@@ -272,7 +273,9 @@
       LuckyBet <span>Demo</span>
     </div>
     <div class="user-summary">
-      <div class="balance-badge" id="navBalanceDisplay">KES 1,000.00</div>
+      <div class="balance-badge">Cash: <span id="navCashDisplay">KES 0.00</span></div>
+      <div class="balance-badge">Bonus: <span id="navBonusDisplay">KES 500.00</span></div>
+      <div class="balance-badge" style="border-color: var(--accent);">Wagering: <span id="navWageringDisplay" style="color: var(--accent);">KES 1,500.00</span></div>
     </div>
   </header>
 
@@ -287,9 +290,7 @@
     <!-- TAB 1: FLIGHT SIMULATOR -->
     <section id="view-aviator" class="view-panel active">
       <div class="card">
-        <div class="history-bar" id="historyBar">
-          <!-- Populated by JS -->
-        </div>
+        <div class="history-bar" id="historyBar"></div>
 
         <div class="canvas-container">
           <canvas id="gameCanvas"></canvas>
@@ -313,7 +314,10 @@
     <!-- TAB 2: SPORTSBOOK DEMO -->
     <section id="view-sports" class="view-panel">
       <div class="card">
-        <h3 style="margin-bottom: 16px;">Featured Events (Simulated Odds)</h3>
+        <h3 style="margin-bottom: 16px;">Featured Events (Simulated Odds & Wagering Qualifiers)</h3>
+        <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">
+          Note: Bets placed with bonus funds only contribute to the turnover requirement if odds are $\ge$ 1.50.
+        </p>
         <div class="fixtures-grid">
           
           <div class="fixture-card">
@@ -322,7 +326,7 @@
             <div class="odds-row">
               <button class="odds-btn" onclick="placeSportsBet('Arsenal', 2.10)">1 (2.10)</button>
               <button class="odds-btn" onclick="placeSportsBet('Draw', 3.25)">X (3.25)</button>
-              <button class="odds-btn" onclick="placeSportsBet('Chelsea', 3.40)">2 (3.40)</button>
+              <button class="odds-btn" onclick="placeSportsBtn('Chelsea', 3.40)">2 (3.40)</button>
             </div>
           </div>
 
@@ -330,19 +334,8 @@
             <div class="fixture-header"><span>La Liga</span><span>Today 21:00</span></div>
             <div style="font-weight: 700; margin-bottom: 10px;">Real Madrid vs Sevilla</div>
             <div class="odds-row">
-              <button class="odds-btn" onclick="placeSportsBet('Real Madrid', 1.55)">1 (1.55)</button>
-              <button class="odds-btn" onclick="placeSportsBet('Draw', 4.10)">X (4.10)</button>
-              <button class="odds-btn" onclick="placeSportsBet('Sevilla', 6.00)">2 (6.00)</button>
-            </div>
-          </div>
-
-          <div class="fixture-card">
-            <div class="fixture-header"><span>Serie A</span><span>Today 19:45</span></div>
-            <div style="font-weight: 700; margin-bottom: 10px;">Inter Milan vs Juventus</div>
-            <div class="odds-row">
-              <button class="odds-btn" onclick="placeSportsBet('Inter Milan', 2.05)">1 (2.05)</button>
-              <button class="odds-btn" onclick="placeSportsBet('Draw', 3.10)">X (3.10)</button>
-              <button class="odds-btn" onclick="placeSportsBet('Juventus', 3.75)">2 (3.75)</button>
+              <button class="odds-btn" onclick="placeSportsBet('Real Madrid', 1.30)">1 (1.30 - Low Odds)</button>
+              <button class="odds-btn" onclick="placeSportsBet('Sevilla', 4.50)">2 (4.50)</button>
             </div>
           </div>
 
@@ -353,30 +346,30 @@
     <!-- TAB 3: SIMULATED WALLET -->
     <section id="view-wallet" class="view-panel">
       <div class="card">
-        <h3 style="margin-bottom: 12px;">Local Demo Wallet</h3>
+        <h3 style="margin-bottom: 12px;">Local Demo Wallet & Banking</h3>
         <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">
-          This wallet operates strictly with test credits stored locally in memory. No real financial transactions are executed.
+          Withdrawals are evaluated strictly against withdrawable cash balance. Bonus funds must clear wagering requirements first.
         </p>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
           <!-- SIMULATED DEPOSIT -->
           <div style="background: var(--surface-card); padding: 16px; border-radius: 8px;">
-            <h4 style="margin-bottom: 8px;">Simulate Credit Addition</h4>
+            <h4 style="margin-bottom: 8px;">Deposit Real Cash</h4>
             <div class="form-group">
               <label class="form-label">Amount (KES)</label>
-              <input type="number" id="demoDepositAmt" class="form-input" value="200" min="50" step="50" />
+              <input type="number" id="demoDepositAmt" class="form-input" value="500" min="50" step="50" />
             </div>
-            <button class="btn" onclick="simulateDeposit()">Add Demo Credits</button>
+            <button class="btn" onclick="simulateDeposit()">Deposit Funds</button>
           </div>
 
           <!-- SIMULATED WITHDRAWAL -->
           <div style="background: var(--surface-card); padding: 16px; border-radius: 8px;">
-            <h4 style="margin-bottom: 8px;">Simulate Credit Deduction</h4>
+            <h4 style="margin-bottom: 8px;">Request Withdrawal</h4>
             <div class="form-group">
-              <label class="form-label">Amount (KES, Min 100)</label>
+              <label class="form-label">Amount (KES)</label>
               <input type="number" id="demoWithdrawAmt" class="form-input" value="100" min="100" step="50" />
             </div>
-            <button class="btn btn-danger" onclick="simulateWithdrawal()">Deduct Demo Credits</button>
+            <button class="btn btn-danger" onclick="simulateWithdrawal()">Withdraw Cash</button>
           </div>
         </div>
       </div>
@@ -386,13 +379,19 @@
   <div id="toast">Alert</div>
 
   <script>
-    // --- STATE MANAGEMENT ---
-    let demoBalance = 1000.00;
+    // --- BACKEND STATE & LOGIC ---
+    const userWallet = {
+      cashBalance: 0.00,        
+      bonusBalance: 500.00,     
+      wageringRemaining: 1500.00, 
+      minQualifyingOdds: 1.50
+    };
+
     let roundHistory = [1.25, 3.42, 1.10, 8.50, 1.95, 2.15];
     
     // Game Engine State
-    let gameState = 'IDLE'; // 'IDLE', 'RUNNING', 'CRASHED'
-    let currentStake = 0;
+    let gameState = 'IDLE'; 
+    let activeBet = null;
     let currentMultiplier = 1.00;
     let crashThreshold = 0;
     let startTime = null;
@@ -408,7 +407,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       resizeCanvas();
       renderHistory();
-      updateBalanceUI();
+      updateWalletUI();
       drawIdleCurve();
     });
 
@@ -438,47 +437,91 @@
       }
     }
 
-    // --- FLIGHT SIMULATION ENGINE ---
+    // --- WALLET & WAGERING CORE FUNCTIONS ---
+    function placeBet(stake, odds) {
+      const useBonus = userWallet.cashBalance < stake && userWallet.bonusBalance >= stake;
+      
+      if (useBonus) {
+        userWallet.bonusBalance -= stake;
+        if (odds >= userWallet.minQualifyingOdds) {
+          userWallet.wageringRemaining = Math.max(0, userWallet.wageringRemaining - stake);
+        }
+      } else if (userWallet.cashBalance >= stake) {
+        userWallet.cashBalance -= stake;
+      } else {
+        throw new Error("Insufficient funds (Cash & Bonus combined do not cover stake)");
+      }
+
+      return { useBonus, stake, odds };
+    }
+
+    function settleWinningBet(bet) {
+      const grossPayout = bet.stake * bet.odds;
+      
+      if (bet.useBonus) {
+        const netProfit = grossPayout - bet.stake;
+        userWallet.bonusBalance += netProfit;
+
+        if (userWallet.wageringRemaining === 0) {
+          userWallet.cashBalance += userWallet.bonusBalance;
+          userWallet.bonusBalance = 0;
+          showToast("Rollover complete! Bonus converted to real cash.");
+        }
+      } else {
+        userWallet.cashBalance += grossPayout;
+      }
+    }
+
+    function validateWithdrawal(requestedAmount) {
+      if (requestedAmount > userWallet.cashBalance) {
+        return {
+          allowed: false,
+          reason: `Withdrawable cash balance is KES ${userWallet.cashBalance.toFixed(2)}. Unsettled bonus funds cannot be withdrawn directly.`
+        };
+      }
+      return { allowed: true };
+    }
+
+    // --- FLIGHT SIMULATION INTEGRATION ---
     function handleGameAction() {
       if (gameState === 'IDLE') {
-        // Place Stake and Start
         const stakeInput = parseFloat(document.getElementById('stakeAmount').value);
         if (isNaN(stakeInput) || stakeInput <= 0) {
           showToast('Please enter a valid stake amount.');
           return;
         }
-        if (stakeInput > demoBalance) {
-          showToast('Insufficient demo credits.');
+
+        // Aviator crash simulator default odds multiplier preview set to minimum 1.00 for placement
+        try {
+          activeBet = placeBet(stakeInput, 1.00);
+        } catch (e) {
+          showToast(e.message);
           return;
         }
 
-        // Deduct Stake
-        demoBalance -= stakeInput;
-        currentStake = stakeInput;
-        updateBalanceUI();
+        updateWalletUI();
 
         // Configure Game Parameters
         gameState = 'RUNNING';
         currentMultiplier = 1.00;
-        // Basic demonstration probability distribution
         crashThreshold = +(1.05 + Math.random() * 4.0).toFixed(2);
         startTime = performance.now();
 
-        // Update UI
-        gameBtn.innerText = `CASHOUT (KES ${(currentStake * currentMultiplier).toFixed(2)})`;
+        gameBtn.innerText = `CASHOUT (KES ${(activeBet.stake * currentMultiplier).toFixed(2)})`;
         gameBtn.classList.add('btn-danger');
         overlay.style.color = '#fff';
 
         animFrame = requestAnimationFrame(gameLoop);
+
       } else if (gameState === 'RUNNING') {
         // Cashout Action
-        const payout = currentStake * currentMultiplier;
-        demoBalance += payout;
-        updateBalanceUI();
-        showToast(`Successfully cashed out at ${currentMultiplier.toFixed(2)}x (+KES ${payout.toFixed(2)})`);
+        activeBet.odds = currentMultiplier;
+        settleWinningBet(activeBet);
+        updateWalletUI();
+        
+        showToast(`Cashed out at ${currentMultiplier.toFixed(2)}x!`);
 
-        // Switch to passive watching
-        currentStake = 0;
+        activeBet = null;
         gameBtn.disabled = true;
         gameBtn.innerText = 'CASHED OUT';
       }
@@ -486,22 +529,18 @@
 
     function gameLoop(timestamp) {
       const elapsed = (timestamp - startTime) / 1000;
-      // Exponential growth curve: M = e^(0.08 * t)
       currentMultiplier = +(Math.exp(0.08 * elapsed)).toFixed(2);
 
       if (currentMultiplier >= crashThreshold) {
-        // Flight ended
         handleCrash();
         return;
       }
 
-      // Update Overlay and Active Cashout Value
       overlay.innerText = `${currentMultiplier.toFixed(2)}x`;
-      if (currentStake > 0) {
-        gameBtn.innerText = `CASHOUT (KES ${(currentStake * currentMultiplier).toFixed(2)})`;
+      if (activeBet) {
+        gameBtn.innerText = `CASHOUT (KES ${(activeBet.stake * currentMultiplier).toFixed(2)})`;
       }
 
-      // Draw Graphics
       renderTrajectory(elapsed);
       animFrame = requestAnimationFrame(gameLoop);
     }
@@ -515,12 +554,11 @@
       if (roundHistory.length > 8) roundHistory.pop();
       renderHistory();
 
-      if (currentStake > 0) {
-        showToast(`Round ended before cashout.`);
-        currentStake = 0;
+      if (activeBet) {
+        showToast(`Round crashed. Stake lost.`);
+        activeBet = null;
       }
 
-      // Reset controls after a brief delay
       setTimeout(() => {
         gameState = 'IDLE';
         overlay.innerText = '1.00x';
@@ -534,16 +572,13 @@
 
     function renderTrajectory(elapsed) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      const originX = 40;
-      const originY = canvas.height - 40;
+      const originX = 40, originY = canvas.height - 40;
       const progressX = Math.min(canvas.width - 80, elapsed * 50);
       const progressY = Math.min(canvas.height - 80, Math.pow(elapsed, 1.6) * 20);
 
       const targetX = originX + progressX;
       const targetY = originY - progressY;
 
-      // Draw Curve
       ctx.strokeStyle = '#10b981';
       ctx.lineWidth = 3;
       ctx.beginPath();
@@ -551,7 +586,6 @@
       ctx.quadraticCurveTo(originX + progressX * 0.4, originY, targetX, targetY);
       ctx.stroke();
 
-      // Draw Point Indicator
       ctx.fillStyle = '#ef4444';
       ctx.beginPath();
       ctx.arc(targetX, targetY, 6, 0, Math.PI * 2);
@@ -576,47 +610,67 @@
       }).join('');
     }
 
-    // --- SPORTSBOOK SIMULATION ---
+    // --- SPORTSBOOK INTEGRATION ---
     function placeSportsBet(selection, odds) {
       const stake = 100;
-      if (demoBalance < stake) {
-        showToast('Insufficient demo credits.');
+      let bet;
+      try {
+        bet = placeBet(stake, odds);
+      } catch(e) {
+        showToast(e.message);
         return;
       }
-      demoBalance -= stake;
-      updateBalanceUI();
-      showToast(`Demo bet placed: ${selection} @ ${odds.toFixed(2)} (Stake: KES ${stake})`);
+
+      updateWalletUI();
+      showToast(`Sports bet placed: ${selection} @ ${odds.toFixed(2)}`);
+
+      // Simulate match outcome resolution after 3 seconds (50% win rate simulation)
+      setTimeout(() => {
+        const isWin = Math.random() > 0.4;
+        if (isWin) {
+          settleWinningBet(bet);
+          showToast(`Sports bet WON! (${selection} @ ${odds.toFixed(2)})`);
+        } else {
+          showToast(`Sports bet LOST (${selection})`);
+        }
+        updateWalletUI();
+      }, 3000);
     }
 
-    // --- WALLET UTILITIES ---
+    // --- WALLET ACTIONS ---
     function simulateDeposit() {
       const amt = parseFloat(document.getElementById('demoDepositAmt').value);
       if (isNaN(amt) || amt <= 0) {
         showToast('Enter a valid deposit amount.');
         return;
       }
-      demoBalance += amt;
-      updateBalanceUI();
-      showToast(`Added KES ${amt.toFixed(2)} in demo credits.`);
+      userWallet.cashBalance += amt;
+      updateWalletUI();
+      showToast(`Successfully deposited KES ${amt.toFixed(2)} real cash.`);
     }
 
     function simulateWithdrawal() {
       const amt = parseFloat(document.getElementById('demoWithdrawAmt').value);
-      if (isNaN(amt) || amt < 100) {
-        showToast('Minimum simulated withdrawal is KES 100.00.');
+      if (isNaN(amt) || amt <= 0) {
+        showToast('Enter a valid withdrawal amount.');
         return;
       }
-      if (amt > demoBalance) {
-        showToast('Insufficient demo balance.');
+      
+      const validation = validateWithdrawal(amt);
+      if (!validation.allowed) {
+        showToast(validation.reason);
         return;
       }
-      demoBalance -= amt;
-      updateBalanceUI();
-      showToast(`Successfully deducted KES ${amt.toFixed(2)} from demo balance.`);
+
+      userWallet.cashBalance -= amt;
+      updateWalletUI();
+      showToast(`Successfully withdrew KES ${amt.toFixed(2)}.`);
     }
 
-    function updateBalanceUI() {
-      document.getElementById('navBalanceDisplay').innerText = `KES ${demoBalance.toFixed(2)}`;
+    function updateWalletUI() {
+      document.getElementById('navCashDisplay').innerText = `KES ${userWallet.cashBalance.toFixed(2)}`;
+      document.getElementById('navBonusDisplay').innerText = `KES ${userWallet.bonusBalance.toFixed(2)}`;
+      document.getElementById('navWageringDisplay').innerText = `KES ${userWallet.wageringRemaining.toFixed(2)}`;
     }
 
     function showToast(msg) {
@@ -624,7 +678,7 @@
       el.innerText = msg;
       el.style.opacity = '1';
       clearTimeout(el._timer);
-      el._timer = setTimeout(() => { el.style.opacity = '0'; }, 3000);
+      el._timer = setTimeout(() => { el.style.opacity = '0'; }, 3500);
     }
   </script>
 </body>
